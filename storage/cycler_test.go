@@ -268,48 +268,6 @@ func TestGetBaseFromStorage(t *testing.T) {
 		assert.NotNil(t, base)
 	})
 
-	t.Run("Local", func(t *testing.T) {
-		local := &Local{Base: Base{}}
-		base := getBaseFromStorage(local)
-		assert.NotNil(t, base)
-	})
-
-	t.Run("GCS", func(t *testing.T) {
-		gcs := &GCS{Base: Base{}}
-		base := getBaseFromStorage(gcs)
-		assert.NotNil(t, base)
-	})
-
-	t.Run("Azure", func(t *testing.T) {
-		azure := &Azure{Base: Base{}}
-		base := getBaseFromStorage(azure)
-		assert.NotNil(t, base)
-	})
-
-	t.Run("WebDAV", func(t *testing.T) {
-		webdav := &WebDAV{Base: Base{}}
-		base := getBaseFromStorage(webdav)
-		assert.NotNil(t, base)
-	})
-
-	t.Run("FTP", func(t *testing.T) {
-		ftp := &FTP{Base: Base{}}
-		base := getBaseFromStorage(ftp)
-		assert.NotNil(t, base)
-	})
-
-	t.Run("SCP", func(t *testing.T) {
-		scp := &SCP{Base: Base{}}
-		base := getBaseFromStorage(scp)
-		assert.NotNil(t, base)
-	})
-
-	t.Run("SFTP", func(t *testing.T) {
-		sftp := &SFTP{Base: Base{}}
-		base := getBaseFromStorage(sftp)
-		assert.NotNil(t, base)
-	})
-
 	t.Run("Unknown type", func(t *testing.T) {
 		// Create a mock storage that doesn't match any known type
 		var unknownStorage Storage

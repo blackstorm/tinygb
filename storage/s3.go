@@ -41,155 +41,23 @@ type S3 struct {
 }
 
 func (s S3) providerName() string {
-	switch s.Service {
-	case "s3":
-		return "AWS S3"
-	case "b2":
-		return "Backblaze B2"
-	case "us3":
-		return "UCloud US3"
-	case "cos":
-		return "QCloud COS"
-	case "kodo":
-		return "Qiniu Kodo"
-	case "r2":
-		return "Cloudflare R2"
-	case "spaces":
-		return "DigitalOcean Spaces"
-	case "bos":
-		return "Baidu BOS"
-	case "oss":
-		return "Aliyun OSS"
-	case "minio":
-		return "MinIO"
-	case "obs":
-		return "Huawei OBS"
-	case "tos":
-		return "Volcengine TOS"
-	case "upyun":
-		return "UpYun"
-	}
-
 	return "AWS S3"
 }
 
 func (s S3) defaultRegion() string {
-	switch s.Service {
-	case "s3":
-		return "us-east-1"
-	case "b2":
-		return "us-east-001"
-	case "us3":
-		return "s3-cn-bj"
-	case "cos":
-		return "ap-nanjing"
-	case "kodo":
-		return "cn-east-1"
-	case "r2":
-		return "us-east-1"
-	case "spaces":
-		return "nyc1"
-	case "bos":
-		return "bj"
-	case "oss":
-		return "cn-hangzhou"
-	case "minio":
-		return "us-east-1"
-	case "obs":
-		return "cn-north-1"
-	case "tos":
-		// https://www.volcengine.com/docs/6349/107356
-		return "cn-beijing"
-	case "upyun":
-		// UpYun does not support region
-		return "none"
-	}
-
 	return "us-east-1"
 }
 
 func (s S3) defaultEndpoint() *string {
-	switch s.Service {
-	case "b2":
-		return aws.String(fmt.Sprintf("%s.backblazeb2.com", s.viper.GetString("region")))
-	case "us3":
-		return aws.String(fmt.Sprintf("%s.ufileos.com", s.viper.GetString("region")))
-	case "cos":
-		return aws.String(fmt.Sprintf("cos.%s.myqcloud.com", s.viper.GetString("region")))
-	case "kodo":
-		return aws.String(fmt.Sprintf("s3-%s.qiniucs.com", s.viper.GetString("region")))
-	case "r2":
-		return aws.String(fmt.Sprintf("%s.r2.cloudflarestorage.com", s.viper.GetString("account_id")))
-	case "spaces":
-		return aws.String(fmt.Sprintf("%s.digitaloceanspaces.com", s.viper.GetString("region")))
-	case "bos":
-		return aws.String(fmt.Sprintf("s3.%s.bcebos.com", s.viper.GetString("region")))
-	case "oss":
-		return aws.String(fmt.Sprintf("oss-%s.aliyuncs.com", s.viper.GetString("region")))
-	case "obs":
-		return aws.String(fmt.Sprintf("obs.%s.myhuaweicloud.com", s.viper.GetString("region")))
-	case "tos":
-		return aws.String(fmt.Sprintf("tos-s3-%s.volces.com", s.viper.GetString("region")))
-	case "upyun":
-		return aws.String("s3.api.upyun.com")
-	}
-
 	return aws.String("")
 }
 
 func (s *S3) defaultStorageClass() string {
-	switch s.Service {
-	case "s3":
-		return "STANDARD_IA"
-	case "b2":
-		return "STANDARD"
-	case "us3":
-		return "ARCHIVE"
-	case "cos":
-		return "STANDARD_IA"
-	case "kodo":
-		return "LINE"
-	case "r2":
-		// https://developers.cloudflare.com/r2/api/s3/api/
-		return ""
-	case "spaces":
-		// Allowed for compatibility purposes. Spaces only accepts the default value, STANDARD,
-		// and will reject other, unsupported storage class values.
-		// https://docs.digitalocean.com/reference/api/spaces-api/#upload-an-object-put
-		return "STANDARD"
-	case "bos":
-		return "STANDARD_IA"
-	case "oss":
-		// https://help.aliyun.com/document_detail/389025.html
-		// By test, Aliyun OSS only support "Standard" via S3 SDK, even we set "STANDARD_IA" or "ARCHIVE"
-		return "STANDARD_IA"
-	case "minio":
-		return ""
-	case "obs":
-		// https://support.huaweicloud.com/api-obs/obs_04_0044.html#obs_04_0044__table63485364
-		// STANDARD, STANDARD_IA, GLACIER, DEEP_ARCHIVE
-		return "STANDARD_IA"
-	case "tos":
-		// https://www.volcengine.com/docs/6349/147050
-		// STANDARD, STANDARD_IA, GLACIER_IR
-		return "STANDARD_IA"
-	case "upyun":
-		// https://help.upyun.com/knowledge-base/s3-api
-		// UpYun API only support STANDARD, so keep this in empty.
-		// And they S3 API only support upload to STANDARD (普通) bucket, it will return 403 when the bucket type is STANDARD_IA (低频).
-		return ""
-	}
-
-	return ""
+	return "STANDARD_IA"
 }
 
 func (s *S3) forcePathStyle() bool {
-	switch s.Service {
-	case "tos", "oss":
-		return false
-	default:
-		return true
-	}
+	return true
 }
 
 func (s *S3) init() {
