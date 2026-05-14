@@ -1,13 +1,13 @@
 import { Button, Empty, Skeleton } from 'antd';
 import { filesize } from 'filesize';
-import { FC } from 'react';
+import type { FunctionComponent } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { useParams } from 'react-router-dom';
 import { PageTitle } from './components';
 
 import Icon from './icon';
 
-const FileList: FC<{}> = () => {
+const FileList: FunctionComponent = () => {
   let { model = '' } = useParams();
 
   const [loading, setLoading] = useState(true);

@@ -1,7 +1,8 @@
 FROM node:24-alpine AS web-builder
+ARG NPM_REGISTRY=https://registry.npmjs.org
 WORKDIR /src/web
-RUN npm install -g pnpm@11.1.2 --registry=https://registry.npmmirror.com \
-    && pnpm config set registry https://registry.npmmirror.com
+RUN npm install -g pnpm@11.1.2 --registry=${NPM_REGISTRY} \
+    && pnpm config set registry ${NPM_REGISTRY}
 COPY web/package.json web/pnpm-lock.yaml web/pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY web/ ./
@@ -28,7 +29,6 @@ RUN apk add --no-cache \
     bzip2 \
     coreutils \
     lzip \
-    xz-dev \
     lzop \
     xz \
     zstd \

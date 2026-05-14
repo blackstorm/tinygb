@@ -5,7 +5,6 @@
 <p align="center">CLI tool for backup your databases, files to cloud storages in schedully.</p>
 <p align="center">
    <a href="https://github.com/gobackup/gobackup/actions?query=workflow%3AGo"><img src="https://github.com/gobackup/gobackup/actions/workflows/test.yml/badge.svg" alt="Build Status" /></a>
-   <a href="https://github.com/gobackup/gobackup/releases"><img src="https://img.shields.io/github/v/release/gobackup/gobackup?label=Version&color=1" alt="GitHub release (latest by date)"></a>
    <a href="https://hub.docker.com/r/huacnlee/gobackup"><img src="https://img.shields.io/docker/v/huacnlee/gobackup?label=Docker&color=blue" alt="Docker Image Version (latest server)"></a>
    <a href="https://formulae.brew.sh/formula/gobackup"><img alt="homebrew version" src="https://img.shields.io/homebrew/v/gobackup?color=success&label=Brew"></a>
 </p>
@@ -93,7 +92,9 @@ Send notification when backup has success or failed.
 ## Installation
 
 ```shell
-curl -sSL https://gobackup.github.io/install | sh
+git clone https://github.com/blackstorm/tinygb.git
+cd tinygb
+./install
 ```
 
 after that, you will get `/usr/local/bin/gobackup` command.

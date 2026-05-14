@@ -14,10 +14,12 @@ fi
 if ! command -v pnpm >/dev/null 2>&1; then
   if command -v corepack >/dev/null 2>&1; then
     corepack enable
-  else
-    echo "pnpm: not found"
-    exit 1
   fi
+fi
+
+if ! command -v pnpm >/dev/null 2>&1; then
+  echo "pnpm: not found"
+  exit 1
 fi
 
 root_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
