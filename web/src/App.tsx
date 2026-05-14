@@ -1,5 +1,5 @@
 import { Button, notification, Popconfirm, Skeleton } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'preact/hooks';
 import { LazyLog, ScrollFollow } from 'react-lazylog';
 import { Link } from 'react-router-dom';
 import Icon from './icon';

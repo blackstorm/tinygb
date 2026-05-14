@@ -1,29 +1,38 @@
+FROM node:24-alpine AS web-builder
+WORKDIR /src/web
+RUN npm install -g pnpm@11.1.2 --registry=https://registry.npmmirror.com \
+    && pnpm config set registry https://registry.npmmirror.com
+COPY web/package.json web/pnpm-lock.yaml web/pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
+COPY web/ ./
+RUN pnpm build
+
+FROM golang:1.26-alpine AS go-builder
+WORKDIR /src
+RUN apk add --no-cache git
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+COPY --from=web-builder /src/web/dist ./web/dist
+ARG VERSION=dev
+RUN CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=${VERSION}" -o /out/gobackup .
+
 FROM alpine:latest
-ARG VERSION=latest
-RUN apk add \
-    curl \
+RUN apk add --no-cache \
     ca-certificates \
     openssl \
     postgresql18-client \
-    # replace busybox utils
     tar \
     gzip \
     pigz \
     bzip2 \
     coreutils \
-    # there is no pbzip2 yet
     lzip \
     xz-dev \
     lzop \
     xz \
-    # pixz is in edge atm
     zstd \
-    # support change timezone
-    tzdata \
-    && \
-    rm -rf /var/cache/apk/*
-
-ADD install /install
-RUN /install ${VERSION} && rm /install
-
+    tzdata
+COPY --from=go-builder /out/gobackup /usr/local/bin/gobackup
+RUN mkdir -p /root/.gobackup
 CMD ["/usr/local/bin/gobackup", "run"]

@@ -1,65 +1,40 @@
 #!/usr/bin/env sh
 
-set -u
+set -eu
 
-type curl >/dev/null || {
-  echo "curl: not found"
-  exit 1
-}
-
-set -e
-
-get_latest_release() {
-  repo="$1"
-  curl -sSL "https://api.github.com/repos/${repo}/releases/latest" |
-    awk 'BEGIN{FS=": |,|\""}; /tag_name/{print $5}'
-}
-
-repo="gobackup/gobackup"
-version="$(get_latest_release "${repo}")" # v1.2.0
-
-# if args has version override it and not eq "latest"
-if test "$#" -eq 1; then
-  if test "$1" != "latest"; then
-    version="$1"
-
-    echo "Install ${version}"
-  fi
-fi
-
-if test -z "${version}"; then
-  echo "Failed to get latest version, this may meet GitHub API rate limit."
-  exit 1
-fi
-
-platform="$(uname | tr "[:upper:]" "[:lower:]")"                    # Linux => linux
-arch="$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')" # x86_64 => amd64, aarch64 => arm64
-package="gobackup-${platform}-${arch}.tar.gz"
-package_url="https://github.com/${repo}/releases/download/${version}/${package}"
 bin="gobackup"
 dest_dir="/usr/local/bin"
-bin_path="${dest_dir}/${bin}"
-tmp_dir="$(mktemp -d)"
+version="${1:-dev}"
 
-# shellcheck disable=SC2064
-trap "rm -r ${tmp_dir}" EXIT
+if ! command -v go >/dev/null 2>&1; then
+  echo "go: not found"
+  exit 1
+fi
 
-if test -e "${bin_path}"; then
-  current_version="v$("${bin_path}" -v | awk '{print $NF}')"
-  if test "${current_version}" = "${version}"; then
-    echo "${bin} is already updated, no need to upgrade."
-    exit 0
+if ! command -v pnpm >/dev/null 2>&1; then
+  if command -v corepack >/dev/null 2>&1; then
+    corepack enable
   else
-    echo "There is a new version of ${bin}, starting to upgrade from ${current_version} to ${version}."
+    echo "pnpm: not found"
+    exit 1
   fi
 fi
-cd "${tmp_dir}"
-curl -sSL "${package_url}" | tar xzf -
+
+root_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+cd "${root_dir}"
+
+(
+  cd web
+  pnpm install --frozen-lockfile
+  pnpm build
+)
+
+CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=${version}" -o "${bin}" .
 
 if test "$(id -u)" -eq 0; then
-  mv "${bin}" "${dest_dir}"
+  mv "${bin}" "${dest_dir}/${bin}"
 else
-  sudo mv "${bin}" "${dest_dir}"
+  sudo mv "${bin}" "${dest_dir}/${bin}"
 fi
 
 mkdir -p ~/.gobackup

@@ -1,6 +1,7 @@
 import { Button, Empty, Skeleton } from 'antd';
 import { filesize } from 'filesize';
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
+import { useEffect, useState } from 'preact/hooks';
 import { useParams } from 'react-router-dom';
 import { PageTitle } from './components';
 
