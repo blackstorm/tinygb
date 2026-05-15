@@ -62,11 +62,35 @@ body {
 }
 
 .log-wrapper {
-  @apply h-[500px] w-full overflow-auto whitespace-pre-wrap break-words rounded bg-gray-950 p-3 font-mono text-xs leading-5 text-gray-100 shadow-sm;
+  @apply h-[500px] w-full overflow-auto rounded bg-gray-950 p-3 font-mono text-xs leading-5 text-gray-100 shadow-sm;
   @screen md {
     height: var(--max-content-height);
     min-height: 250px;
   }
+}
+
+.log-line {
+  @apply whitespace-pre-wrap break-words border-l-2 border-transparent pl-2;
+}
+
+.log-line-info {
+  @apply text-gray-100;
+}
+
+.log-line-warn {
+  @apply border-yellow text-yellow;
+}
+
+.log-line-error {
+  @apply border-red text-red;
+}
+
+.log-time {
+  @apply mr-2 text-gray-400;
+}
+
+.log-tag {
+  @apply mr-2 text-blue;
 }
 
 .model-list-wrapper {

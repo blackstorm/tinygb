@@ -20,9 +20,34 @@ const ListSkeleton = ({ rows = 4 }: { rows?: number }) => (
   </div>
 );
 
+const ansiRegex = /\x1b\[[0-9;]*m/g;
+
+const LogLine = ({ line }: { line: string }) => {
+  const cleanLine = line.replace(ansiRegex, '');
+  const match = cleanLine.match(/^(\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2})\s+(\[[^\]]+\])\s?(.*)$/);
+  const level = /\b(error|failed|fail|fatal)\b/i.test(cleanLine)
+    ? 'error'
+    : /\b(warn|warning)\b/i.test(cleanLine)
+      ? 'warn'
+      : 'info';
+
+  if (!match) {
+    return <div className={`log-line log-line-${level}`}>{cleanLine}</div>;
+  }
+
+  const [, time, tag, message] = match;
+  return (
+    <div className={`log-line log-line-${level}`}>
+      <span className="log-time">{time}</span>
+      <span className="log-tag">{tag}</span>
+      <span>{message}</span>
+    </div>
+  );
+};
+
 const LogView = () => {
   const [lines, setLines] = useState<string[]>([]);
-  const logRef = useRef<HTMLPreElement>(null);
+  const logRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -66,9 +91,11 @@ const LogView = () => {
   }, [lines]);
 
   return (
-    <pre ref={logRef} className="log-wrapper">
-      {lines.join('\n')}
-    </pre>
+    <div ref={logRef} className="log-wrapper" role="log" aria-live="polite">
+      {lines.map((line, index) => (
+        <LogLine line={line} key={index} />
+      ))}
+    </div>
   );
 };
 
