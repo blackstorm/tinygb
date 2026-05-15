@@ -62,9 +62,10 @@ body {
 }
 
 .log-wrapper {
-  @apply h-[500px] w-full overflow-auto rounded bg-gray-950 p-3 font-mono text-xs leading-5 text-gray-100 shadow-sm;
+  @apply h-[500px] w-full overflow-auto whitespace-pre-wrap break-words rounded bg-gray-950 p-3 font-mono text-xs leading-5 text-gray-100 shadow-sm;
   @screen lg {
-    height: auto;
+    height: calc(var(--max-content-height) - 50px);
+    min-height: 250px;
   }
 }
 
