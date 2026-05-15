@@ -39,37 +39,15 @@ func TestModel(t *testing.T) {
 	assert.Equal(t, model.EncryptWith.Type, "openssl")
 	assert.NotNil(t, model.EncryptWith.Viper)
 
-	assert.Equal(t, model.DefaultStorage, "local")
-	assert.Equal(t, model.Storages["local"].Type, "local")
-	assert.Equal(t, model.Storages["local"].Viper.GetString("path"), "/Users/jason/Downloads/backup1")
-
-	assert.Equal(t, model.Storages["scp"].Type, "scp")
-	assert.Equal(t, model.Storages["scp"].Viper.GetString("host"), "your-host.com")
+	assert.Equal(t, model.DefaultStorage, "s3")
+	assert.Equal(t, model.Storages["s3"].Type, "s3")
+	assert.Equal(t, model.Storages["s3"].Viper.GetString("bucket"), "gobackup-test")
 
 	// databases
-	assert.Len(t, model.Databases, 3)
+	assert.Len(t, model.Databases, 1)
 
-	// mysql
-	db := model.GetDatabaseByName("dummy_test")
-	assert.Equal(t, db.Name, "dummy_test")
-	assert.Equal(t, db.Type, "mysql")
-	assert.Equal(t, db.Viper.GetString("host"), "localhost")
-	assert.Equal(t, db.Viper.GetString("port"), "3306")
-	assert.Equal(t, db.Viper.GetString("database"), "dummy_test")
-	assert.Equal(t, db.Viper.GetString("username"), "root")
-	assert.Equal(t, db.Viper.GetString("password"), "123456")
-
-	// redis
-	db = model.GetDatabaseByName("redis1")
-	assert.Equal(t, db.Name, "redis1")
-	assert.Equal(t, db.Type, "redis")
-	assert.Equal(t, db.Viper.GetString("mode"), "sync")
-	assert.Equal(t, db.Viper.GetString("rdb_path"), "/var/db/redis/dump.rdb")
-	assert.Equal(t, db.Viper.GetBool("invoke_save"), true)
-	assert.Equal(t, db.Viper.GetString("password"), "456123")
-
-	// redis
-	db = model.GetDatabaseByName("postgresql")
+	// postgresql
+	db := model.GetDatabaseByName("postgresql")
 	assert.Equal(t, db.Name, "postgresql")
 	assert.Equal(t, db.Type, "postgresql")
 	assert.Equal(t, db.Viper.GetString("host"), "localhost")
@@ -94,7 +72,7 @@ func Test_otherModels(t *testing.T) {
 	model := GetModelConfigByName("normal_files")
 
 	// default_storage
-	assert.Equal(t, model.DefaultStorage, "scp")
+	assert.Equal(t, model.DefaultStorage, "s3")
 
 	// schedule
 	schedule := model.Schedule
@@ -218,8 +196,8 @@ func TestInitWithEmptyDatabasesOrStorages(t *testing.T) {
   myjob:
     databases: null
     storages:
-      local:
-        type: local
+      s3:
+        type: s3
         keep: 2
 `,
 			expectErr:          true,
@@ -231,8 +209,8 @@ func TestInitWithEmptyDatabasesOrStorages(t *testing.T) {
   myjob:
     databases:
     storages:
-      local:
-        type: local
+      s3:
+        type: s3
         keep: 2
 `,
 			expectErr:          true,
@@ -244,8 +222,8 @@ func TestInitWithEmptyDatabasesOrStorages(t *testing.T) {
   myjob:
     databases: {}
     storages:
-      local:
-        type: local
+      s3:
+        type: s3
         keep: 2
 `,
 			expectErr:          true,
@@ -256,8 +234,8 @@ func TestInitWithEmptyDatabasesOrStorages(t *testing.T) {
 			configContent: `models:
   myjob:
     storages:
-      local:
-        type: local
+      s3:
+        type: s3
         keep: 2
 `,
 			expectErr:          true,
@@ -268,8 +246,8 @@ func TestInitWithEmptyDatabasesOrStorages(t *testing.T) {
 			configContent: `models:
   myjob:
     storages:
-      local:
-        type: local
+      s3:
+        type: s3
         keep: 2
     archive:
       includes:

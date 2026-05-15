@@ -1,260 +1,258 @@
 <p align="center">
 <img src="https://user-images.githubusercontent.com/5518/205909959-12b92929-4ac5-4bb5-9111-6f9a3ed76cf6.png" width="160" />
-
-<h1 align="center">GoBackup</h1>
-<p align="center">CLI tool for backup your databases, files to cloud storages in schedully.</p>
-<p align="center">
-   <a href="https://github.com/gobackup/gobackup/actions?query=workflow%3AGo"><img src="https://github.com/gobackup/gobackup/actions/workflows/test.yml/badge.svg" alt="Build Status" /></a>
-   <a href="https://github.com/gobackup/gobackup/releases"><img src="https://img.shields.io/github/v/release/gobackup/gobackup?label=Version&color=1" alt="GitHub release (latest by date)"></a>
-   <a href="https://hub.docker.com/r/huacnlee/gobackup"><img src="https://img.shields.io/docker/v/huacnlee/gobackup?label=Docker&color=blue" alt="Docker Image Version (latest server)"></a>
-   <a href="https://formulae.brew.sh/formula/gobackup"><img alt="homebrew version" src="https://img.shields.io/homebrew/v/gobackup?color=success&label=Brew"></a>
 </p>
 
-GoBackup is a backup tool design for application servers, to backup your databases, files to cloud storages (FTP, SCP, S3, GCS, Aliyun OSS ...) in schedully.
+<h1 align="center">TinyGB</h1>
+<p align="center">A tiny, opinionated fork of GoBackup for PostgreSQL + S3 backups.</p>
 
-Simple, easy to use, one time setup, run years without any maintenance, low cost (recycle), secure (encrypt compress).
+TinyGB is a heavily pruned fork of [GoBackup](https://github.com/gobackup/gobackup). It keeps the deployment model and configuration style of GoBackup, but narrows the supported surface area for a small, focused backup service.
 
-> Inspired by [backup/backup](https://github.com/backup/backup) and replace it for without Ruby dependency.
+## How TinyGB differs from GoBackup
 
-[![asciicast](https://asciinema.org/a/543564.svg)](https://asciinema.org/a/543564)
+TinyGB intentionally removes broad provider support and keeps only the pieces needed for a minimal PostgreSQL-to-S3 backup workflow.
 
-GoBackup 是一个为中小型服务器而设计备份工具，内置计划任务，帮你定时备份数据库、配置文件，通过导出、打包压缩，最终存储到外部云存储（如：FTP、SCP、S3、GCS、Aliyun OSS ...）。
+### Kept
 
-简单易用，一次性部署后能持续运行数年无需任何维护，存储成本低（回收机制），安全可靠（加密压缩）。
+- PostgreSQL database backups.
+- S3-compatible storage.
+- Webhook notifications.
+- Archive file/directory backup support.
+- `tar` / `tgz` compression.
+- OpenSSL encryption.
+- Split large backup files into parts.
+- Built-in scheduler and daemon mode.
+- Built-in Web UI.
+- Before / after scripts.
+- Environment variable expansion in config files.
 
-> 🎈 [Ruby China](https://ruby-china.org) 的应用服务器从 GoBackup 设计之初（2017 年）开始就每日全量备份到外部的云存储，并持续数年一直默默的备份着，完全不需要维护。Aliyun OSS 上，每月成本仅为 0.2 RMB（文件回收周期为 1 个月）。
+### Removed / pruned
 
-https://gobackup.github.io
+- Database adapters other than PostgreSQL.
+- Storage adapters other than S3-compatible storage.
+- Notifiers other than Webhook.
+- Prometheus metrics and the `/metrics` endpoint.
+- FTP package replacement and release-download based installer.
+- Large Web UI dependencies:
+  - Ant Design
+  - React Router
+  - React Lazy Log
+  - Remix Icon
+  - React compatibility runtime
+- Docker image build no longer downloads binaries from GitHub releases; it builds from source with a multi-stage Dockerfile.
 
-## Features
+### Web UI changes
 
-- No dependencies.
-- Multiple Databases source support.
-- Multiple Storage type support.
-- Archive paths or files into a tar.
-- Split large backup file into multiple parts.
-- Run as daemon to backup in schedully.
-- Web UI to manage backups.
+Compared with upstream GoBackup, the Web UI is now much smaller:
+
+- Built with Preact.
+- Uses `wouter-preact` for tiny routing.
+- Uses `lucide-preact` for tree-shaken SVG icons.
+- Uses local CSS/Tailwind components instead of Ant Design.
+- Uses a lightweight native streaming log viewer instead of `react-lazylog`.
+
+Current Web UI bundle is roughly:
+
+```text
+JS gzip:  ~13 KB
+CSS gzip: ~3 KB
+```
+
+## Supported components
 
 ### Databases
 
-- MySQL
 - PostgreSQL
-- Redis
-- MongoDB
-- SQLite
-- Microsoft SQL Server
-- InfluxDB
-- MariaDB
-- etcd
-- Firebird
 
 ### Storages
 
-- Local
-- FTP
-- SFTP
-- SCP - Upload via SSH copy
-- [Amazon S3](https://aws.amazon.com/s3)
-- [Aliyun OSS](https://www.aliyun.com/product/oss)
-- [Google Cloud Storage](https://cloud.google.com/storage)
-- [Azure Blob Storage](https://azure.microsoft.com/en-us/products/storage/blobs)
-- [Backblaze B2 Cloud Storage](https://www.backblaze.com/b2)
-- [Cloudflare R2](https://www.cloudflare.com/products/r2)
-- [DigitalOcean Spaces](https://www.digitalocean.com/products/spaces)
-- [QCloud COS](https://cloud.tencent.com/product/cos)
-- [UCloud US3](https://docs.ucloud.cn/ufile/introduction/concept)
-- [Qiniu Kodo](https://www.qiniu.com/products/kodo)
-- [Baidu BOS](https://cloud.baidu.com/product/bos.html)
-- [MinIO](https://min.io)
-- [Huawei OBS](https://www.huaweicloud.com/intl/en-us/product/obs.html)
-- [Volcengine TOS](https://www.volcengine.com/product/tos)
-- [UpYun](https://upyun.com)
-- [WebDAV](http://www.webdav.org)
+- Amazon S3 and S3-compatible storage
 
-## Notifier
+### Notifiers
 
-> since: 1.5.0
-
-Send notification when backup has success or failed.
-
-- Mail (SMTP)
 - Webhook
-- Discord
-- Slack
-- Feishu
-- DingTalk
-- GitHub (Comment on Issue)
-- Telegram
-- AWS SES
-- Postmark
-- SendGrid
 
-## Installation
+### Compression / encryption
+
+- `tar`
+- `tgz`
+- OpenSSL encryption
+
+## Installation from source
 
 ```shell
-curl -sSL https://gobackup.github.io/install | sh
+git clone https://github.com/blackstorm/tinygb.git
+cd tinygb
+./install
 ```
 
-after that, you will get `/usr/local/bin/gobackup` command.
+After that, you will get:
 
-### Install via Homebrew
-
-```shell
-brew install gobackup
+```text
+/usr/local/bin/gobackup
 ```
+
+The binary name is kept as `gobackup` for compatibility with the original CLI and existing configs.
+
+## Docker
+
+Build locally:
 
 ```bash
-$ gobackup -h
-NAME:
-   gobackup - Backup your databases, files to FTP / SCP / S3 / GCS and other cloud storages.
-
-USAGE:
-   gobackup [global options] command [command options] [arguments...]
-
-VERSION:
-   1.3.0
-
-COMMANDS:
-   perform
-   start    Start as daemon
-   run      Run GoBackup
-   help, h  Shows a list of commands or help for one command
-
-GLOBAL OPTIONS:
-   --help, -h     show help (default: false)
-   --version, -v  print the version (default: false)
+docker build -t tinygb:latest .
 ```
+
+Build with a version string:
+
+```bash
+docker build --build-arg VERSION=v1.0.0 -t tinygb:v1.0.0 .
+```
+
+If your environment needs a custom npm registry for Web UI dependencies:
+
+```bash
+docker build \
+  --build-arg NPM_REGISTRY=https://registry.npmmirror.com \
+  -t tinygb:latest .
+```
+
+The runtime image contains the compiled `gobackup` binary and required system tools only.
 
 ## Configuration
 
-GoBackup will seek config files in:
+TinyGB will seek config files in:
 
-- ~/.gobackup/gobackup.yml
-- /etc/gobackup/gobackup.yml
+- `./gobackup.yml`
+- `~/.gobackup/gobackup.yml`
+- `/etc/gobackup/gobackup.yml`
 
-Example config: [gobackup_test.yml](https://github.com/huacnlee/gobackup/blob/master/gobackup_test.yml)
+Example:
 
 ```yml
+web:
+  host: 0.0.0.0
+  port: 2703
+  username: gobackup
+  password: 123456
+
 models:
-  gitlab_app:
+  app_backup:
+    description: "PostgreSQL and config backup"
+    schedule:
+      # At 04:05 every day.
+      every: "1day"
+      at: "04:05"
+
+    before_script: |
+      echo "before backup"
+
+    after_script: |
+      echo "after backup"
+
     databases:
-      gitlab_db:
+      app_db:
         type: postgresql
-        database: gitlab_production
-        username: gitlab
-        password:
-      gitlab_redis:
-        type: redis
-        mode: sync
-        rdb_path: /var/db/redis/dump.rdb
-        invoke_save: true
+        host: localhost
+        port: 5432
+        database: app_production
+        username: postgres
+        password: $POSTGRES_PASSWORD
+
+    archive:
+      includes:
+        - /etc/hosts
+        - /etc/nginx/nginx.conf
+      excludes:
+        - /tmp
+
+    compress_with:
+      type: tgz
+      filename_format: "2006.01.02.15.04.05"
+
+    encrypt_with:
+      type: openssl
+      password: $BACKUP_ENCRYPTION_PASSWORD
+
     storages:
       s3:
         type: s3
-        bucket: my_app_backup
+        bucket: my-app-backups
         region: us-east-1
         path: backups
-        access_key_id: $S3_ACCESS_KEY_Id
+        access_key_id: $S3_ACCESS_KEY_ID
         secret_access_key: $S3_SECRET_ACCESS_KEY
-    compress_with:
-      type: tgz
+
+    notifiers:
+      webhook:
+        type: webhook
+        url: $BACKUP_WEBHOOK_URL
 ```
 
 ## Usage
 
-### Perform backup
+### Perform backup once
 
 ```bash
-$ gobackup perform
+gobackup perform -m app_backup -c ./gobackup.yml
 ```
 
-### Backup schedule
-
-GoBackup built in a daemon mode, you can use `gobackup start` to start it.
-
-You can configure the `schedule` for each models, it will run backup task at the time you set.
-
-#### For example
-
-Configure your schedule in `gobackup.yml`
-
-```yml
-models:
-  my_backup:
-    before_script: |
-      echo "Before script"
-    after_script: |
-      echo "After script"
-    schedule:
-      # At 04:05 on Sunday.
-      cron: "5 4 * * sun"
-    storages:
-      local:
-        type: local
-        path: /path/to/backups
-    databases:
-      mysql:
-        type: mysql
-        host: localhost
-        port: 3306
-        database: my_database
-        username: root
-        password: password
-  other_backup:
-    # At 04:05 on every day.
-    schedule:
-      every: "1day"
-      at: "04:05"
-    storages:
-      local:
-        type: local
-        path: /path/to/backups
-    databases:
-      mysql:
-        type: mysql
-        host: localhost
-        port: 3306
-        database: my_database
-        username: root
-        password: password
-```
-
-### Start Daemon & Web UI
-
-GoBackup built a HTTP Server for Web UI, you can start it by `gobackup start`.
-
-It also will handle the backup schedule.
+### Run scheduler and Web UI in foreground
 
 ```bash
-$ gobackup start
-
-2023/03/15 23:00:30 [Config] Load config from default path.
-Starting API server on port http://127.0.0.1:2703
+gobackup run --config ./gobackup.yml
 ```
 
-> NOTE: If you wants start without daemon, use `gobackup run` instead.
-
-Now visit http://127.0.0.1:2703 you can see the Web UI:
-
-![gobackup-webui-main](https://user-images.githubusercontent.com/5518/225351245-90ff1eab-673a-44c7-bf37-d1964af24e12.png)
-![gobackup-webui-files](https://user-images.githubusercontent.com/5518/225351184-32d9ada9-2faf-45a3-a7f3-10d41feffb8c.png)
-
-### Signal handling
-
-GoBackup will handle the following signals:
-
-- `HUP` - Hot reload configuration.
-- `QUIT` - Graceful shutdown.
+### Start as daemon
 
 ```bash
-$ ps aux | grep gobackup
-jason            20443   0.0  0.1 409232800   8912   ??  Ss    7:47PM   0:00.02 gobackup run
+gobackup start --config ./gobackup.yml
+```
 
+The Web UI listens on the configured `web.host` and `web.port`.
+
+Default test config credentials are:
+
+```text
+username: gobackup
+password: 123456
+```
+
+Production configs should set a strong password.
+
+## Signals
+
+TinyGB keeps GoBackup's signal handling:
+
+- `HUP` - hot reload configuration.
+- `QUIT` - graceful shutdown.
+
+```bash
 # Reload configuration
-$ kill -HUP 20443
+kill -HUP <pid>
+
 # Exit daemon
-$ kill -QUIT 20443
+kill -QUIT <pid>
+```
+
+## Development
+
+Run Go tests:
+
+```bash
+go test ./...
+```
+
+Build Web UI:
+
+```bash
+cd web
+pnpm install
+pnpm build
+```
+
+Run locally with the test config:
+
+```bash
+make run
 ```
 
 ## License

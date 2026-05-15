@@ -3,7 +3,6 @@ package model
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/spf13/viper"
 
@@ -14,7 +13,6 @@ import (
 	"github.com/gobackup/gobackup/encryptor"
 	"github.com/gobackup/gobackup/helper"
 	"github.com/gobackup/gobackup/logger"
-	"github.com/gobackup/gobackup/metrics"
 	"github.com/gobackup/gobackup/notifier"
 	"github.com/gobackup/gobackup/splitter"
 	"github.com/gobackup/gobackup/storage"
@@ -28,31 +26,16 @@ type Model struct {
 // Perform model
 func (m Model) Perform() (err error) {
 	logger := logger.Tag(fmt.Sprintf("Model: %s", m.Config.Name))
-	startTime := time.Now()
 	var archivePath string
 
 	m.before()
 
 	defer func() {
-		duration := time.Since(startTime).Seconds()
-		metrics.DuractionSeconds.WithLabelValues(m.Config.Name).Observe(duration)
-
 		if err != nil {
 			logger.Error(err)
 			notifier.Failure(m.Config, err.Error())
-			metrics.TotalAttempts.WithLabelValues(m.Config.Name, "failure").Inc()
-			metrics.LastTimestamp.WithLabelValues(m.Config.Name, "failure").Set(float64(time.Now().Unix()))
 		} else {
 			notifier.Success(m.Config)
-			metrics.TotalAttempts.WithLabelValues(m.Config.Name, "success").Inc()
-			metrics.LastTimestamp.WithLabelValues(m.Config.Name, "success").Set(float64(time.Now().Unix()))
-
-			// Record backup file size if available
-			if archivePath != "" {
-				if fi, statErr := os.Stat(archivePath); statErr == nil {
-					metrics.FileSizes.WithLabelValues(m.Config.Name).Set(float64(fi.Size()))
-				}
-			}
 		}
 	}()
 

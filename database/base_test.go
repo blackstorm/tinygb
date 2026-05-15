@@ -22,7 +22,7 @@ func (db Monkey) perform() error {
 	if db.model.Name != "TestMonkey" {
 		return fmt.Errorf("Error")
 	}
-	if db.dbConfig.Name != "mysql1" {
+	if db.dbConfig.Name != "postgresql1" {
 		return fmt.Errorf("Error")
 	}
 	return nil
@@ -34,7 +34,7 @@ func TestBaseInterface(t *testing.T) {
 			Name: "TestMonkey",
 		},
 		dbConfig: config.SubConfig{
-			Name: "mysql1",
+			Name: "postgresql1",
 		},
 	}
 	db := Monkey{Base: base}
@@ -47,14 +47,14 @@ func TestBase_newBase(t *testing.T) {
 		DumpPath: "/tmp/gobackup/test",
 	}
 	dbConfig := config.SubConfig{
-		Type: "mysql",
-		Name: "mysql-master",
+		Type: "postgresql",
+		Name: "postgresql-master",
 	}
 	base := newBase(model, dbConfig)
 
 	assert.Equal(t, base.model, model)
 	assert.Equal(t, base.dbConfig, dbConfig)
 	assert.Equal(t, base.viper, dbConfig.Viper)
-	assert.Equal(t, base.name, "mysql-master")
-	assert.Equal(t, base.dumpPath, "/tmp/gobackup/test/mysql/mysql-master")
+	assert.Equal(t, base.name, "postgresql-master")
+	assert.Equal(t, base.dumpPath, "/tmp/gobackup/test/postgresql/postgresql-master")
 }

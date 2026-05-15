@@ -4,8 +4,23 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-co-op/gocron"
+	"github.com/gobackup/gobackup/config"
 	"github.com/longbridgeapp/assert"
 )
+
+func Test_buildScheduleWithExtendedEveryAndAt(t *testing.T) {
+	cron := gocron.NewScheduler(time.Local)
+
+	scheduler, err := buildSchedule(cron, config.ScheduleConfig{
+		Enabled: true,
+		Every:   "1day",
+		At:      "0:30",
+	})
+
+	assert.Nil(t, err)
+	assert.NotNil(t, scheduler)
+}
 
 func Test_parseDuration(t *testing.T) {
 	tests := []struct {

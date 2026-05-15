@@ -262,20 +262,6 @@ func getBaseFromStorage(s Storage) *Base {
 	switch v := s.(type) {
 	case *S3:
 		return &v.Base
-	case *GCS:
-		return &v.Base
-	case *Azure:
-		return &v.Base
-	case *Local:
-		return &v.Base
-	case *WebDAV:
-		return &v.Base
-	case *FTP:
-		return &v.Base
-	case *SCP:
-		return &v.Base
-	case *SFTP:
-		return &v.Base
 	default:
 		return nil
 	}

@@ -50,19 +50,7 @@ func Test_S3_open(t *testing.T) {
 
 func Test_providerName(t *testing.T) {
 	var cases = map[string]serviceInfo{
-		"s3":     {"AWS S3", "", "us-east-1", "STANDARD_IA", true},
-		"b2":     {"Backblaze B2", "us-east-001.backblazeb2.com", "us-east-001", "STANDARD", true},
-		"us3":    {"UCloud US3", "s3-cn-bj.ufileos.com", "s3-cn-bj", "ARCHIVE", true},
-		"cos":    {"QCloud COS", "cos.ap-nanjing.myqcloud.com", "ap-nanjing", "STANDARD_IA", true},
-		"kodo":   {"Qiniu Kodo", "s3-cn-east-1.qiniucs.com", "cn-east-1", "LINE", true},
-		"r2":     {"Cloudflare R2", ".r2.cloudflarestorage.com", "us-east-1", "", true},
-		"spaces": {"DigitalOcean Spaces", "nyc1.digitaloceanspaces.com", "nyc1", "STANDARD", true},
-		"bos":    {"Baidu BOS", "s3.bj.bcebos.com", "bj", "STANDARD_IA", true},
-		"oss":    {"Aliyun OSS", "oss-cn-hangzhou.aliyuncs.com", "cn-hangzhou", "STANDARD_IA", false},
-		"obs":    {"Huawei OBS", "obs.cn-north-1.myhuaweicloud.com", "cn-north-1", "STANDARD_IA", true},
-		"tos":    {"Volcengine TOS", "tos-s3-cn-beijing.volces.com", "cn-beijing", "STANDARD_IA", false},
-		"upyun":  {"UpYun", "s3.api.upyun.com", "none", "", true},
-		"minio":  {"MinIO", "", "us-east-1", "", true},
+		"s3": {"AWS S3", "", "us-east-1", "STANDARD_IA", true},
 	}
 
 	base, _ := newBase(config.ModelConfig{}, "test", config.SubConfig{})

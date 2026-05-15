@@ -97,6 +97,9 @@ func getGoBackupDir() string {
 	if len(dir) == 0 {
 		dir = filepath.Join(os.Getenv("HOME"), ".gobackup")
 	}
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		logger.Errorf("Create GoBackup dir %s failed: %v", dir, err)
+	}
 	return dir
 }
 

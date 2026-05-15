@@ -1,26 +1,22 @@
-# Guide for Release new version
+# Guide for releasing a new version
 
-Just create a new tag and push, the GitHub Actions will to the rest.
+Create a new tag and push it:
 
 ```bash
-git tag -v v2.5.1
+git tag -a v2.5.1 -m "v2.5.1"
 git push origin v2.5.1
 ```
 
-After the GitHub Actions finished, the new version will be released to GitHub Releases.
+Build release artifacts from source. For Docker images, use the multi-stage Dockerfile:
 
-https://github.com/gobackup/gobackup/releases
+```bash
+docker build --build-arg VERSION=v2.5.1 -t tinygb:v2.5.1 .
+```
 
-Edit the latest release, and add the release note.
+For a local binary install, use:
 
-## Release to Homebrew
+```bash
+./install v2.5.1
+```
 
-The GitHub Actions also have a step to release to Homebrew.
-
-But there may have a problem, the Homebrew Core repo may not update the formula.
-
-So it need visit: https://github.com/huacnlee/homebrew-core
-
-And click `Sync Fork` button, then click `Update Branch` button to update the formula.
-
-Then retry the Homebrew release GitHub Action.
+Then create or edit the release notes in this repository's GitHub Releases page.

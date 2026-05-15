@@ -29,6 +29,6 @@ We have a `Makefile` provided some commands:
 
 ## Release a new version
 
-1. Create a tag named `vX.Y.Z` and push tag, then GitHub Actions will release it.
-2. Write a release note for descrbe this version to [GitHub Releases](https://github.com/gobackup/gobackup/releases).
-3. Makesure to update the [Website](https://github.com/gobackup/gobackup.github.io) doc.
+1. Create a tag named `vX.Y.Z` and push the tag.
+2. Build release artifacts from source using the local toolchain or Docker multi-stage build.
+3. Write release notes in this repository's GitHub Releases page.

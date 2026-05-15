@@ -1,5 +1,3 @@
-@import 'antd/dist/reset.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -21,19 +19,41 @@ body {
   }
 }
 
-.ricon {
-  font-size: 1em;
+.btn {
+  @apply inline-flex items-center justify-center rounded border border-gray-300 bg-white text-gray-800 hover:bg-gray-50 active:bg-gray-100 disabled:opacity-50;
 }
 
-.ant-btn {
-  @apply items-center;
+.btn-sm {
+  @apply h-8 min-w-8 px-2 text-sm;
+}
 
-  .ricon {
-    all: unset;
+.toast {
+  @apply fixed right-4 top-4 z-50 rounded border px-4 py-2 text-sm shadow;
+}
+
+.toast-success {
+  @apply border-green bg-white text-green;
+}
+
+.toast-error {
+  @apply border-red bg-white text-red;
+}
+
+.ricon {
+  display: inline-block;
+  vertical-align: -0.125em;
+}
+
+.ricon-loading {
+  animation: ricon-spin 1s linear infinite;
+}
+
+@keyframes ricon-spin {
+  from {
+    transform: rotate(0deg);
   }
-
-  .ricon + span {
-    margin-left: 4px;
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -42,32 +62,50 @@ body {
 }
 
 .log-wrapper {
-  @apply relative w-full h-[500px];
-  @screen lg {
-    height: auto;
-  }
-
-  .react-lazylog-searchbar {
-    @apply rounded-t border-b  border-b-gray-900 shadow-md;
-  }
-  .ReactVirtualized__List {
-    @apply rounded-b;
+  @apply h-[500px] w-full overflow-auto rounded bg-gray-950 p-3 font-mono text-xs leading-5 text-gray-100 shadow-sm;
+  @screen md {
+    height: var(--max-content-height);
+    min-height: 250px;
   }
 }
 
+.log-line {
+  @apply whitespace-pre-wrap break-words border-l-2 border-transparent pl-2;
+}
+
+.log-line-info {
+  @apply text-gray-100;
+}
+
+.log-line-warn {
+  @apply border-yellow text-yellow;
+}
+
+.log-line-error {
+  @apply border-red text-red;
+}
+
+.log-time {
+  @apply mr-2 text-gray-400;
+}
+
+.log-tag {
+  @apply mr-2 text-blue;
+}
+
 .model-list-wrapper {
-  @apply rounded w-full md:w-[450px] lg:w-[600px] border border-gray-200;
+  @apply flex h-[500px] w-full flex-col rounded border border-gray-200 md:w-[450px] lg:w-[600px];
+  @screen md {
+    height: var(--max-content-height);
+    min-height: 250px;
+  }
 
   .model-list-header {
-    @apply text-lg text-gray-600 p-2 px-4 bg-gray-100 border-b border-gray-200;
+    @apply flex-none text-lg text-gray-600 p-2 px-4 bg-gray-100 border-b border-gray-200;
   }
 
   .model-list-scrollview {
-    @apply overflow-y-scroll h-[300px];
-    @screen lg {
-      height: calc(var(--max-content-height) - 50px);
-      min-height: 250px;
-    }
+    @apply min-h-0 flex-1 overflow-y-auto;
   }
 
   .model-list-item {
