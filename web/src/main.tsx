@@ -1,24 +1,13 @@
 import { StyleProvider } from '@ant-design/cssinjs';
 import { ConfigProvider } from 'antd';
 import { render } from 'preact';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { Route, Switch } from 'wouter-preact';
 import App from './App';
 import FileList from './FileList';
 
 import 'remixicon/fonts/remixicon.css';
 import Icon from './icon';
 import './style.scss';
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <App />,
-  },
-  {
-    path: `/browser/:model`,
-    element: <FileList />,
-  },
-]);
 
 render(
   <>
@@ -37,7 +26,12 @@ render(
       <StyleProvider hashPriority="high">
         <div className="p-0">
           <div className="p-4">
-            <RouterProvider router={router} />
+            <Switch>
+              <Route path="/" component={App} />
+              <Route path="/browser/:model">
+                {(params) => <FileList model={params.model} />}
+              </Route>
+            </Switch>
           </div>
           <div className="footer">
             <div className="copyright flex items-center space-x-1">

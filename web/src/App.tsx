@@ -1,7 +1,7 @@
 import { Button, notification, Popconfirm, Skeleton } from 'antd';
 import { useEffect, useState } from 'preact/hooks';
 import { LazyLog, ScrollFollow } from 'react-lazylog';
-import { Link } from 'react-router-dom';
+import { Link } from 'wouter-preact';
 import Icon from './icon';
 
 const API_URL = '/api';
@@ -92,7 +92,7 @@ const ModelList = ({}) => {
           )}
         </div>
         <div className="flex items-center space-x-1">
-          <Link to={`/browser/${modelKey}`}>
+          <Link href={`/browser/${modelKey}`}>
             <Button size="small">
               <Icon name="folders" />
             </Button>

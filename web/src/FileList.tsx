@@ -2,13 +2,15 @@ import { Button, Empty, Skeleton } from 'antd';
 import { filesize } from 'filesize';
 import type { FunctionComponent } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
-import { useParams } from 'react-router-dom';
 import { PageTitle } from './components';
 
 import Icon from './icon';
 
-const FileList: FunctionComponent = () => {
-  let { model = '' } = useParams();
+type FileListProps = {
+  model: string;
+};
+
+const FileList: FunctionComponent<FileListProps> = ({ model }) => {
 
   const [loading, setLoading] = useState(true);
   const [files, setFiles] = useState<any[]>([]);

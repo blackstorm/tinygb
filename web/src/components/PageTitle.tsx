@@ -1,5 +1,5 @@
 import type { ComponentChildren, FunctionComponent } from 'preact';
-import { Link } from 'react-router-dom';
+import { Link } from 'wouter-preact';
 import Icon from '../icon';
 
 const PageTitle: FunctionComponent<{
@@ -11,7 +11,7 @@ const PageTitle: FunctionComponent<{
     <div className="flex items-center space-x-3 pb-3 justify-between">
       <div className="flex items-center gap-3">
         <Link
-          to={backTo}
+          href={backTo}
           className="text-2xl hover:text-red rounded hover:border-gray-100"
         >
           <Icon name="arrow-left" />
