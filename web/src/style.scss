@@ -63,25 +63,25 @@ body {
 
 .log-wrapper {
   @apply h-[500px] w-full overflow-auto whitespace-pre-wrap break-words rounded bg-gray-950 p-3 font-mono text-xs leading-5 text-gray-100 shadow-sm;
-  @screen lg {
-    height: calc(var(--max-content-height) - 50px);
+  @screen md {
+    height: var(--max-content-height);
     min-height: 250px;
   }
 }
 
 .model-list-wrapper {
-  @apply rounded w-full md:w-[450px] lg:w-[600px] border border-gray-200;
+  @apply flex h-[500px] w-full flex-col rounded border border-gray-200 md:w-[450px] lg:w-[600px];
+  @screen md {
+    height: var(--max-content-height);
+    min-height: 250px;
+  }
 
   .model-list-header {
-    @apply text-lg text-gray-600 p-2 px-4 bg-gray-100 border-b border-gray-200;
+    @apply flex-none text-lg text-gray-600 p-2 px-4 bg-gray-100 border-b border-gray-200;
   }
 
   .model-list-scrollview {
-    @apply overflow-y-scroll h-[300px];
-    @screen lg {
-      height: calc(var(--max-content-height) - 50px);
-      min-height: 250px;
-    }
+    @apply min-h-0 flex-1 overflow-y-auto;
   }
 
   .model-list-item {
