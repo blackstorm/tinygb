@@ -3,7 +3,6 @@ import { Route, Switch } from 'wouter-preact';
 import App from './App';
 import FileList from './FileList';
 
-import Icon from './icon';
 import './style.scss';
 
 render(
@@ -40,7 +39,7 @@ render(
             title="GitHub"
             target="_blank"
           >
-            <Icon name="github" />
+            GitHub
           </a>
         </div>
       </div>
