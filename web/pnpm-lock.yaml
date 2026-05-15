@@ -11,6 +11,9 @@ importers:
       '@ant-design/cssinjs':
         specifier: ^1.24.0
         version: 1.24.0(@preact/compat@18.3.2(preact@10.29.1))(@preact/compat@18.3.2(preact@10.29.1))
+      lucide-preact:
+        specifier: ^1.16.0
+        version: 1.16.0(preact@10.29.1)
       preact:
         specifier: ^10.28.0
         version: 10.29.1
@@ -51,9 +54,6 @@ importers:
       postcss:
         specifier: ^8.4.21
         version: 8.5.14
-      remixicon:
-        specifier: ^2.5.0
-        version: 2.5.0
       sass:
         specifier: ^1.59.2
         version: 1.99.0
@@ -901,6 +901,11 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
+  lucide-preact@1.16.0:
+    resolution: {integrity: sha512-Sa1XSig6iWCFhdrqS+vT1EFJH4Yos2Q7H/EMawql1K+D9qjNRzjMutPySak0iMYto6PneHYAWoxnDBBlryjngw==}
+    peerDependencies:
+      preact: ^10.27.2
+
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
@@ -1297,9 +1302,6 @@ packages:
   regexparam@3.0.0:
     resolution: {integrity: sha512-RSYAtP31mvYLkAHrOlh25pCNQ5hWnT106VukGaaFfuJrZFkGRX5GhUAdPqpSDXxOhA2c4akmRuplv1mRqnBn6Q==}
     engines: {node: '>=8'}
-
-  remixicon@2.5.0:
-    resolution: {integrity: sha512-q54ra2QutYDZpuSnFjmeagmEiN9IMo56/zz5dDNitzKD23oFRw77cWo4TsrAdmdkPiEn8mxlrTqxnkujDbEGww==}
 
   resize-observer-polyfill@1.5.1:
     resolution: {integrity: sha512-LwZrotdHOo12nQuZlHEmtuXdqGoOD0OhaxopaNFxWzInpEgaLWoVuAMbTzixuosCx2nEG58ngzW3vxdWoxIgdg==}
@@ -2305,6 +2307,10 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
+  lucide-preact@1.16.0(preact@10.29.1):
+    dependencies:
+      preact: 10.29.1
+
   magic-string@0.30.21:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
@@ -2775,8 +2781,6 @@ snapshots:
   readdirp@4.1.2: {}
 
   regexparam@3.0.0: {}
-
-  remixicon@2.5.0: {}
 
   resize-observer-polyfill@1.5.1: {}
 

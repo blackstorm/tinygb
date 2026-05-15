@@ -1,14 +1,39 @@
+import {
+  ArrowLeft,
+  DownloadCloud,
+  FolderArchive,
+  Folders,
+  GitFork,
+  LucideIcon,
+  Play,
+  RefreshCw,
+  Server,
+} from 'lucide-preact';
+
+const icons: Record<string, LucideIcon> = {
+  'arrow-left': ArrowLeft,
+  'download-cloud': DownloadCloud,
+  'folder-zip': FolderArchive,
+  folders: Folders,
+  github: GitFork,
+  play: Play,
+  refresh: RefreshCw,
+  stack: Server,
+};
+
 export default (props: {
-  name: string;
-  mode?: 'line' | 'fill';
+  name: keyof typeof icons;
   className?: string;
   loading?: boolean;
 }) => {
-  const { mode = 'line', className = '', loading = false } = props;
+  const { className = '', loading = false } = props;
+  const Icon = icons[props.name];
 
-  let classes = `ricon ri-${props.name}-${mode} ${className}`;
-  if (loading) {
-    classes += ' ricon-loading';
-  }
-  return <i className={classes}></i>;
+  return (
+    <Icon
+      className={`ricon ${loading ? 'ricon-loading' : ''} ${className}`}
+      size="1em"
+      aria-hidden="true"
+    />
+  );
 };

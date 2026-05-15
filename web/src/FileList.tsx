@@ -75,7 +75,7 @@ const FileList: FunctionComponent<FileListProps> = ({ model }) => {
               <div>
                 <Button size="small" title="Download backup file.">
                   <a href={downloadURL}>
-                    <Icon name="download-cloud" mode="fill" />
+                    <Icon name="download-cloud" />
                   </a>
                 </Button>
               </div>

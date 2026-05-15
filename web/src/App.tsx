@@ -104,7 +104,7 @@ const ModelList = ({}) => {
             onConfirm={() => performBackup(modelKey)}
           >
             <Button size="small" title="Perform backup now!">
-              <Icon name="play" mode="fill" />
+              <Icon name="play" />
             </Button>
           </Popconfirm>
         </div>

@@ -5,7 +5,6 @@ import { Route, Switch } from 'wouter-preact';
 import App from './App';
 import FileList from './FileList';
 
-import 'remixicon/fonts/remixicon.css';
 import Icon from './icon';
 import './style.scss';
 
@@ -56,7 +55,7 @@ render(
                 title="GitHub"
                 target="_blank"
               >
-                <Icon name="github" mode="fill" />
+                <Icon name="github" />
               </a>
             </div>
           </div>
