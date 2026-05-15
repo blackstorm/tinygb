@@ -1,5 +1,3 @@
-@import 'antd/dist/reset.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -21,6 +19,26 @@ body {
   }
 }
 
+.btn {
+  @apply inline-flex items-center justify-center rounded border border-gray-300 bg-white text-gray-800 hover:bg-gray-50 active:bg-gray-100 disabled:opacity-50;
+}
+
+.btn-sm {
+  @apply h-8 min-w-8 px-2 text-sm;
+}
+
+.toast {
+  @apply fixed right-4 top-4 z-50 rounded border px-4 py-2 text-sm shadow;
+}
+
+.toast-success {
+  @apply border-green bg-white text-green;
+}
+
+.toast-error {
+  @apply border-red bg-white text-red;
+}
+
 .ricon {
   display: inline-block;
   vertical-align: -0.125em;
@@ -39,33 +57,14 @@ body {
   }
 }
 
-.ant-btn {
-  @apply items-center;
-
-  .ricon {
-    all: unset;
-  }
-
-  .ricon + span {
-    margin-left: 4px;
-  }
-}
-
 :root {
   --max-content-height: calc(100vh - 75px);
 }
 
 .log-wrapper {
-  @apply relative w-full h-[500px];
+  @apply h-[500px] w-full overflow-auto rounded bg-gray-950 p-3 font-mono text-xs leading-5 text-gray-100 shadow-sm;
   @screen lg {
     height: auto;
-  }
-
-  .react-lazylog-searchbar {
-    @apply rounded-t border-b  border-b-gray-900 shadow-md;
-  }
-  .ReactVirtualized__List {
-    @apply rounded-b;
   }
 }
 

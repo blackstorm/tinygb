@@ -1,4 +1,3 @@
-import { Button, Empty, Skeleton } from 'antd';
 import { filesize } from 'filesize';
 import type { FunctionComponent } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
@@ -10,11 +9,21 @@ type FileListProps = {
   model: string;
 };
 
-const FileList: FunctionComponent<FileListProps> = ({ model }) => {
+const FileSkeleton = () => (
+  <div className="animate-pulse space-y-3 p-4">
+    {Array.from({ length: 5 }).map((_, i) => (
+      <div className="flex justify-between" key={i}>
+        <div className="h-4 w-1/3 rounded bg-gray-200" />
+        <div className="h-4 w-1/5 rounded bg-gray-100" />
+      </div>
+    ))}
+  </div>
+);
 
+const FileList: FunctionComponent<FileListProps> = ({ model }) => {
   const [loading, setLoading] = useState(true);
   const [files, setFiles] = useState<any[]>([]);
-  const [parent, setParent] = useState('/');
+  const [parent] = useState('/');
 
   const Time = ({ value }: { value: string }) => {
     if (!value) return <></>;
@@ -40,13 +49,7 @@ const FileList: FunctionComponent<FileListProps> = ({ model }) => {
     reloadList();
   }, [model]);
 
-  const FileItem = ({
-    file,
-    type = 'file',
-  }: {
-    file: any;
-    type?: 'file' | 'folder';
-  }) => {
+  const FileItem = ({ file }: { file: any }) => {
     const downloadURL =
       `/api/download?` +
       new URLSearchParams({
@@ -65,23 +68,17 @@ const FileList: FunctionComponent<FileListProps> = ({ model }) => {
           <Icon name="folder-zip" />
           <div className="max-w-xl truncate">{file.filename}</div>
         </a>
-        {type === 'file' && (
-          <>
-            <div className="flex items-center justify-between text-sm space-x-4 text-gray-400">
-              <div>{fsize}</div>
-              <div>
-                <Time value={file.last_modified} />
-              </div>
-              <div>
-                <Button size="small" title="Download backup file.">
-                  <a href={downloadURL}>
-                    <Icon name="download-cloud" />
-                  </a>
-                </Button>
-              </div>
-            </div>
-          </>
-        )}
+        <div className="flex items-center justify-between text-sm space-x-4 text-gray-400">
+          <div>{fsize}</div>
+          <div>
+            <Time value={file.last_modified} />
+          </div>
+          <div>
+            <a className="btn btn-sm" title="Download backup file." href={downloadURL}>
+              <Icon name="download-cloud" />
+            </a>
+          </div>
+        </div>
       </div>
     );
   };
@@ -97,18 +94,18 @@ const FileList: FunctionComponent<FileListProps> = ({ model }) => {
         }
         backTo={`/`}
         extra={
-          <>
-            <Button size="small" onClick={reloadList} title="Refresh">
-              <Icon name="refresh" loading={loading} />
-            </Button>
-          </>
+          <button className="btn btn-sm" onClick={reloadList} title="Refresh">
+            <Icon name="refresh" loading={loading} />
+          </button>
         }
       />
       <div className="file-browser-container">
-        {loading && <Skeleton active />}
+        {loading && <FileSkeleton />}
         {!loading && (
           <>
-            {files.length === 0 && <Empty className="pt-10" />}
+            {files.length === 0 && (
+              <div className="pt-10 text-center text-gray-400">No files.</div>
+            )}
             {files.map((file, i) => (
               <FileItem key={i} file={file} />
             ))}

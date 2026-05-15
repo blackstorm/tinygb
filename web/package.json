@@ -11,9 +11,6 @@
   "devDependencies": {
     "@preact/preset-vite": "^2.10.2",
     "@types/node": "^18.15.3",
-    "@types/react": "^18.0.27",
-    "@types/react-dom": "^18.0.10",
-    "antd": "^5.3.1",
     "autoprefixer": "^10.4.14",
     "filesize": "^10.0.6",
     "postcss": "^8.4.21",
@@ -23,12 +20,8 @@
     "vite": "^4.5.9"
   },
   "dependencies": {
-    "@ant-design/cssinjs": "^1.24.0",
     "lucide-preact": "^1.16.0",
     "preact": "^10.28.0",
-    "react": "npm:@preact/compat@^18.3.1",
-    "react-dom": "npm:@preact/compat@^18.3.1",
-    "react-lazylog": "^4.5.3",
     "wouter-preact": "^3.9.0"
   },
   "packageManager": "pnpm@11.1.2"

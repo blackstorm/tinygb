@@ -1,41 +1,86 @@
-import { Button, notification, Popconfirm, Skeleton } from 'antd';
-import { useEffect, useState } from 'preact/hooks';
-import { LazyLog, ScrollFollow } from 'react-lazylog';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { Link } from 'wouter-preact';
 import Icon from './icon';
 
 const API_URL = '/api';
 
-/**
- * LazyLog
- *
- * https://mozilla-frontend-infra.github.io/react-lazylog/
- * https://github.com/mozilla-frontend-infra/react-lazylog
- */
+type Toast = {
+  type: 'success' | 'error';
+  message: string;
+};
+
+const ListSkeleton = ({ rows = 4 }: { rows?: number }) => (
+  <div className="animate-pulse divide-y divide-gray-100">
+    {Array.from({ length: rows }).map((_, i) => (
+      <div className="p-4" key={i}>
+        <div className="h-4 w-1/3 rounded bg-gray-200" />
+        <div className="mt-2 h-3 w-1/2 rounded bg-gray-100" />
+      </div>
+    ))}
+  </div>
+);
+
 const LogView = () => {
+  const [lines, setLines] = useState<string[]>([]);
+  const logRef = useRef<HTMLPreElement>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    const readLog = async () => {
+      const res = await fetch(`${API_URL}/log`, {
+        credentials: 'include',
+        signal: controller.signal,
+      });
+      const reader = res.body?.getReader();
+      if (!reader) return;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split('\n');
+        buffer = parts.pop() || '';
+        if (parts.length > 0) {
+          setLines((prev) => [...prev, ...parts].slice(-1000));
+        }
+      }
+    };
+
+    readLog().catch((err) => {
+      if (err.name !== 'AbortError') {
+        setLines((prev) => [...prev, `Failed to stream log: ${err.message}`]);
+      }
+    });
+
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    if (logRef.current) {
+      logRef.current.scrollTop = logRef.current.scrollHeight;
+    }
+  }, [lines]);
+
   return (
-    <div className="log-wrapper">
-      <ScrollFollow
-        startFollowing
-        render={({ follow, onScroll }) => (
-          <LazyLog
-            extraLines={1}
-            enableSearch={true}
-            url={`${API_URL}/log`}
-            stream
-            follow={follow}
-            onScroll={onScroll}
-            fetchOptions={{ credentials: 'include' }}
-          />
-        )}
-      />
-    </div>
+    <pre ref={logRef} className="log-wrapper">
+      {lines.join('\n')}
+    </pre>
   );
 };
 
 const ModelList = ({}) => {
   const [loading, setLoading] = useState(false);
-  const [models, setModels] = useState({});
+  const [models, setModels] = useState<Record<string, any>>({});
+  const [toast, setToast] = useState<Toast | null>(null);
+
+  const showToast = (toast: Toast) => {
+    setToast(toast);
+    window.setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     reloadModels();
@@ -49,17 +94,20 @@ const ModelList = ({}) => {
       },
       body: JSON.stringify({ model }),
     })
-      .then((res) => res.json())
-      .then((data) => {
-        notification.success({
-          message: 'Backup',
-          description: `Backup for ${model} performed successfully.`,
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then(() => {
+        showToast({
+          type: 'success',
+          message: `Backup for ${model} started.`,
         });
       })
-      .catch((data) => {
-        notification.error({
-          message: 'Backup Failed',
-          description: data.message,
+      .catch((err) => {
+        showToast({
+          type: 'error',
+          message: err.message || 'Backup failed.',
         });
       });
   };
@@ -93,20 +141,22 @@ const ModelList = ({}) => {
         </div>
         <div className="flex items-center space-x-1">
           <Link href={`/browser/${modelKey}`}>
-            <Button size="small">
+            <button className="btn btn-sm" title="Browse backup files">
               <Icon name="folders" />
-            </Button>
+            </button>
           </Link>
 
-          <Popconfirm
-            title="Perform Backup"
-            description="Are you sure to perform backup now?"
-            onConfirm={() => performBackup(modelKey)}
+          <button
+            className="btn btn-sm"
+            title="Perform backup now!"
+            onClick={() => {
+              if (window.confirm('Are you sure to perform backup now?')) {
+                performBackup(modelKey);
+              }
+            }}
           >
-            <Button size="small" title="Perform backup now!">
-              <Icon name="play" />
-            </Button>
-          </Popconfirm>
+            <Icon name="play" />
+          </button>
         </div>
       </div>
     );
@@ -114,6 +164,7 @@ const ModelList = ({}) => {
 
   return (
     <div className="model-list-wrapper">
+      {toast && <div className={`toast toast-${toast.type}`}>{toast.message}</div>}
       <div className="model-list-header">
         <div className="flex items-center space-x-2">
           <Icon name="stack" />
@@ -121,11 +172,7 @@ const ModelList = ({}) => {
         </div>
       </div>
       <div className="model-list-scrollview">
-        {loading && (
-          <div className="p-4">
-            <Skeleton active />
-          </div>
-        )}
+        {loading && <ListSkeleton />}
         {!loading && (
           <>
             {Object.keys(models).map((key: string, idx: number) => (
