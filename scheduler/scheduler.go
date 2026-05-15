@@ -58,6 +58,52 @@ func init() {
 	})
 }
 
+func buildSchedule(cron *gocron.Scheduler, schedule config.ScheduleConfig) (*gocron.Scheduler, error) {
+	if schedule.Cron != "" {
+		return cron.Cron(schedule.Cron), nil
+	}
+
+	if schedule.Every == "" {
+		return nil, fmt.Errorf("schedule every is empty")
+	}
+
+	duration, err := parseDuration(schedule.Every)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(schedule.At) > 0 {
+		scheduler, err := buildAtSchedule(cron, schedule.Every)
+		if err != nil {
+			return nil, err
+		}
+		return scheduler.At(schedule.At), nil
+	}
+
+	return cron.Every(duration).StartAt(time.Now().Add(duration)), nil
+}
+
+func buildAtSchedule(cron *gocron.Scheduler, every string) (*gocron.Scheduler, error) {
+	matches := extendedDurationRegex.FindStringSubmatch(strings.ToLower(every))
+	if matches == nil {
+		return nil, fmt.Errorf("schedule at is only supported with day, week, or month intervals")
+	}
+
+	value, _ := strconv.Atoi(matches[1])
+	scheduler := cron.Every(value)
+
+	switch matches[2] {
+	case "day", "days", "d":
+		return scheduler.Day(), nil
+	case "week", "weeks", "w":
+		return scheduler.Week(), nil
+	case "month", "months":
+		return scheduler.Month(), nil
+	}
+
+	return nil, fmt.Errorf("invalid duration format: %s", every)
+}
+
 // Start scheduler
 func Start() error {
 	logger := superlogger.Tag("Scheduler")
@@ -73,18 +119,10 @@ func Start() error {
 
 		logger.Info(fmt.Sprintf("Register %s with (%s)", modelConfig.Name, modelConfig.Schedule.String()))
 
-		var scheduler *gocron.Scheduler
-		if modelConfig.Schedule.Cron != "" {
-			scheduler = mycron.Cron(modelConfig.Schedule.Cron)
-		} else {
-			scheduler = mycron.Every(modelConfig.Schedule.Every)
-			if len(modelConfig.Schedule.At) > 0 {
-				scheduler = scheduler.At(modelConfig.Schedule.At)
-			} else {
-				// If no $at present, delay start cron job with $every duration
-				startDuration, _ := parseDuration(modelConfig.Schedule.Every)
-				scheduler = scheduler.StartAt(time.Now().Add(startDuration))
-			}
+		scheduler, err := buildSchedule(mycron, modelConfig.Schedule)
+		if err != nil {
+			logger.Errorf("Failed to register schedule: %s", err.Error())
+			continue
 		}
 
 		if _, err := scheduler.Do(func(modelConfig config.ModelConfig) {

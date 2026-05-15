@@ -52,7 +52,7 @@ func StartHTTP(version string) (err error) {
 		logger.Warn("You are running with insecure API server. Please don't forget setup `web.password` in config file for more safety.")
 	}
 
-	logFile, err = os.Open(config.LogFilePath)
+	logFile, err = os.OpenFile(config.LogFilePath, os.O_RDONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return err
 	}
